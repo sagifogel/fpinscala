@@ -1,2 +1,2 @@
 # fpinscala
-<a href="https://github.com/YuvalItzchakov/ursus-martimus">functional-programming-in-scala</a> exercises
+<a href="https://www.manning.com/books/functional-programming-in-scala">functional-programming-in-scala</a> exercises
