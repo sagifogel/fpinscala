@@ -54,7 +54,7 @@ trait Monad[F[_]] extends Functor[F] {
     map(traverse(ms)(a => product(f(a), unit(a))))(_.collect { case (b, a) if b => a })
   }
 
-  def compose[A,B,C](f: A => F[B], g: B => F[C]): A => F[C] =
+  def compose[A, B, C](f: A => F[B], g: B => F[C]): A => F[C] =
     a => flatMap(f(a))(g)
 
   def flatMapCompose[A, B](ma: F[A])(f: A => F[B]): F[B] = {
@@ -75,7 +75,6 @@ object Monad {
     override def flatMap[A, B](ma: Par[A])(f: A => Par[B]): Par[B] =
       Par.flatMap(ma)(f)
   }
-
 
   val streamMonad: Monad[Stream] = new Monad[Stream] {
     override def unit[A](a: => A): Stream[A] = a #:: Stream.empty
@@ -101,17 +100,18 @@ object Monad {
     override def flatMap[A, B](ma: Id[A])(f: A => Id[B]): Id[B] = f(ma.value)
   }
 
-  def stateMonad[S]: Monad[({type state[x] = State[S, x] })#state]
-  = new Monad[({type state[x] = State[S, x] })#state] {
+  def stateMonad[S]: Monad[({type state[x] = State[S, x]})#state]
+  = new Monad[({type state[x] = State[S, x]})#state] {
     override def unit[A](a: => A): State[S, A] = State(s => (a, s))
 
     override def flatMap[A, B](ma: State[S, A])(f: A => State[S, B]): State[S, B] =
       ma flatMap f
   }
 
-  def eitherMonad[T] = new Monad[({type either[a] = Either[T, a]})#either] {
-    override def unit[A](a: => A): Either[T, A] = Right(a)
+  def eitherMonad[T]: Monad[({type either[a] = Either[T, a]})#either] =
+    new Monad[({type either[a] = Either[T, a]})#either] {
+      override def unit[A](a: => A): Either[T, A] = Right(a)
 
-    override def flatMap[A, B](ma: Either[T, A])(f: A => Either[T, B]): Either[T, B] = ma flatMap f
-  }
+      override def flatMap[A, B](ma: Either[T, A])(f: A => Either[T, B]): Either[T, B] = ma flatMap f
+    }
 }

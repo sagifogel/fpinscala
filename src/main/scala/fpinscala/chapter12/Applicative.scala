@@ -1,9 +1,7 @@
 package fpinscala.chapter12
 
-import java.util.Date
-
-import fpinscala.chapter10.Foldable
 import fpinscala.chapter11.Functor
+import fpinscala.chapter6.State
 
 trait Applicative[F[_]] extends Functor[F] {
   def apply[A, B](fab: F[A => B])(fa: F[A]): F[B] = map2(fab, fa)(_.apply(_))
@@ -89,4 +87,11 @@ object Applicative {
       override def unit[A](a: => A): F[G[A]] = F.unit(G.unit(a))
     }
 
+  def stateMonad[S]: Monad[({type state[x] = State[S, x]})#state]
+  = new Monad[({type state[x] = State[S, x]})#state] {
+    override def unit[A](a: => A): State[S, A] = State(s => (a, s))
+
+    override def flatMap[A, B](ma: State[S, A])(f: A => State[S, B]): State[S, B] =
+      ma flatMap f
+  }
 }

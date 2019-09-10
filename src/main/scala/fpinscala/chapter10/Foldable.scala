@@ -1,7 +1,7 @@
 package fpinscala.chapter10
 
 import fpinscala.chapter10.Monoid._
-import fpinscala.Syntax._
+import fpinscala.syntax.Syntax._
 import scala.Function.const
 import fpinscala.datastructures.{Branch, Leaf, Tree}
 
