@@ -51,12 +51,12 @@ trait Applicative[F[_]] extends Functor[F] {
 
   def sequenceMap[K, V](ofa: Map[K, F[V]]): F[Map[K, V]] = {
     val zero = unit(Map.empty[K, V])
-    ofa.foldRight(zero){ case ((k, fa), fb) => map2(fa, fb)((v, map) => map.updated(k, v)) }
+    ofa.foldRight(zero) { case ((k, fa), fb) => map2(fa, fb)((v, map) => map.updated(k, v)) }
   }
 }
 
 object Applicative {
-  def validationApplicative[E] = new Applicative[({type f[a] = Validation[E, a]})#f] {
+  def validationApplicative[E]: Applicative[({type f[a] = Validation[E, a]})#f] = new Applicative[({type f[a] = Validation[E, a]})#f] {
     override def map2[A, B, C](fa: Validation[E, A], fb: Validation[E, B])(f: (A, B) => C): Validation[E, C] = {
       (fa, fb) match {
         case (Success(a), Success(b)) => Success(f(a, b))

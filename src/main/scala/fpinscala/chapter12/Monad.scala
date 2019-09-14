@@ -3,6 +3,7 @@ package fpinscala.chapter12
 import fpinscala.chapter6.State
 
 trait Monad[F[_]] extends Applicative[F] {
+  self =>
   def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B] = join(map(fa)(f))
 
   def join[A](ffa: F[F[A]]): F[A] = flatMap(ffa)(identity)
@@ -24,4 +25,17 @@ object Monad {
     override def flatMap[A, B](ma: State[S, A])(f: A => State[S, B]): State[S, B] =
       ma flatMap f
   }
+
+  def composeM[F[_], G[_]](F: Monad[F], G: Monad[G], T: Traverse[G]): Monad[({type f[x] = F[G[x]]})#f] = {
+    new Monad[({type f[x] = F[G[x]]})#f] {
+      override def unit[A](a: => A): F[G[A]] = F.unit(G.unit(a))
+
+      override def flatMap[A, B](fa: F[G[A]])(f: A => F[G[B]]): F[G[B]] = {
+        F.flatMap(fa)(ga => {
+          F.map(T.sequence(G.map(ga)(f))(F))(G.join[B])
+        })
+      }
+    }
+  }
+
 }

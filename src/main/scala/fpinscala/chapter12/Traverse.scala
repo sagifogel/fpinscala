@@ -4,7 +4,7 @@ import fpinscala.chapter10.Monoid
 import fpinscala.chapter11.{Monad => _, Functor}
 import fpinscala.chapter6.State
 
-trait Traverse[F[_]] extends Functor[F] {
+trait Traverse[F[_]] extends Functor[F] { self =>
 
   import Traverse._
 
@@ -42,8 +42,8 @@ trait Traverse[F[_]] extends Functor[F] {
       _ <- State.set(s2)
     } yield b).run(s)
 
-   def toList2[A](fa: F[A]): List[A] =
-    mapAccum(fa, List.empty)((a, s) => ((), a :: s))._2.reverse
+  def toList2[A](fa: F[A]): List[A] =
+    mapAccum(fa, List.empty[A])((a, s) => ((), a :: s))._2.reverse
 
   def zipWithIndex2[A](fa: F[A]): F[(A, Int)] =
     mapAccum(fa, 0)((a, s) => ((a, s), s + 1))._1
@@ -56,21 +56,29 @@ trait Traverse[F[_]] extends Functor[F] {
     mapAccum(fa, z)((a, b) => ((), f(b, a)))._2
   }
 
-  def zipL[A,B](fa: F[A], fb: F[B]): F[(A, Option[B])] =
+  def zipL[A, B](fa: F[A], fb: F[B]): F[(A, Option[B])] =
     (mapAccum(fa, toList(fb)) {
       case (a, Nil) => ((a, None), Nil)
       case (a, b :: bs) => ((a, Some(b)), bs)
     })._1
 
-  def zipR[A,B](fa: F[A], fb: F[B]): F[(Option[A], B)] =
+  def zipR[A, B](fa: F[A], fb: F[B]): F[(Option[A], B)] =
     mapAccum(fb, toList(fa)) {
       case (b, Nil) => ((None, b), Nil)
       case (b, a :: as) => ((Some(a), b), as)
     }._1
 
-  def fuse[G[_],H[_],A,B](fa: F[A])(f: A => G[B], g: A => H[B])
-                         (G: Applicative[G], H: Applicative[H]): (G[F[B]], H[F[B]]) = {
-    ???
+  def fuse[G[_], H[_], A, B](fa: F[A])(f: A => G[B], g: A => H[B])
+                            (implicit G: Applicative[G], H: Applicative[H]): (G[F[B]], H[F[B]]) = {
+    (sequence(map(fa)(f)), sequence(map(fa)(g)))
+  }
+
+  def compose[G[_]](implicit G: Traverse[G]): Traverse[({type f[x] = F[G[x]]})#f] = {
+    new Traverse[({type f[x] = F[G[x]]})#f] {
+      override def traverse[M[_], A, B](fa: F[G[A]])(f: A => M[B])(implicit M: Applicative[M]): M[F[G[B]]] = {
+        self.traverse(fa)(G.traverse(_)(f))
+     }
+    }
   }
 }
 

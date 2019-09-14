@@ -48,6 +48,5 @@ scalacOptions ++= Seq(
   "-Ywarn-unused:locals",
   "-Ywarn-unused:params",
   "-Ywarn-unused:patvars",
-  "-Ywarn-unused:privates",
   "-Ywarn-value-discard"
 )
