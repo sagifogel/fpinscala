@@ -1,8 +1,8 @@
-package fpinscala.chapter12
+package fpinscala.applicative
 
-import fpinscala.chapter10.Monoid
-import fpinscala.chapter11.{Monad => _, Functor}
-import fpinscala.chapter6.State
+import fpinscala.monoids.Monoid
+import fpinscala.monads.{Monad => _, Functor}
+import fpinscala.state.State
 
 trait Traverse[F[_]] extends Functor[F] { self =>
 

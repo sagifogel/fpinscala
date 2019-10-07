@@ -1,4 +1,4 @@
-package fpinscala.chapter12
+package fpinscala.applicative
 
 import java.text.SimpleDateFormat
 import java.util.Date

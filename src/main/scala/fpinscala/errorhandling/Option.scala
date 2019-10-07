@@ -1,4 +1,4 @@
-package fpinscala.chapter4
+package fpinscala.errorhandling
 
 import fpinscala.datastructures.List
 import fpinscala.datastructures.Cons

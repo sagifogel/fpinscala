@@ -1,7 +1,7 @@
-package fpinscala.chapter12
+package fpinscala.applicative
 
-import fpinscala.chapter11.Functor
-import fpinscala.chapter6.State
+import fpinscala.monads.Functor
+import fpinscala.state.State
 
 trait Applicative[F[_]] extends Functor[F] {
   def apply[A, B](fab: F[A => B])(fa: F[A]): F[B] = map2(fab, fa)(_.apply(_))

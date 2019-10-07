@@ -1,4 +1,4 @@
-package fpinscala.chapter11
+package fpinscala.monads
 
 import scala.Function.const
 

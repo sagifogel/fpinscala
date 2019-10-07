@@ -1,9 +1,8 @@
-package fpinscala.chapter12
+package fpinscala.applicative
 
-import fpinscala.chapter6.State
+import fpinscala.state.State
 
-trait Monad[F[_]] extends Applicative[F] {
-  self =>
+trait Monad[F[_]] extends Applicative[F] { self =>
   def flatMap[A, B](fa: F[A])(f: A => F[B]): F[B] = join(map(fa)(f))
 
   def join[A](ffa: F[F[A]]): F[A] = flatMap(ffa)(identity)
@@ -13,7 +12,7 @@ trait Monad[F[_]] extends Applicative[F] {
 
   override def map[A, B](fa: F[A])(f: A => B): F[B] = flatMap(fa)(a => unit(f(a)))
 
-  def map2[A, B, C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] =
+  override def map2[A, B, C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] =
     flatMap(fa)(a => map(fb)(f(a, _)))
 }
 

@@ -1,4 +1,4 @@
-package fpinscala.chapter6
+package fpinscala.state
 
 sealed trait RNG {
   def nextInt: (Int, RNG)

@@ -1,6 +1,6 @@
-package fpinscala.chapter10
+package fpinscala.monoids
 
-import fpinscala.chapter10.Monoid._
+import fpinscala.monoids.Monoid._
 import fpinscala.syntax.Syntax._
 import scala.Function.const
 import fpinscala.datastructures.{Branch, Leaf, Tree}
@@ -24,29 +24,29 @@ trait Foldable[F[_]] {
 }
 
 object Foldable {
-  val listFoldable = new Foldable[List] {
+  val listFoldable: Foldable[List] = new Foldable[List] {
     override def foldMap[A, B](as: List[A])(f: A => B)(mb: Monoid[B]): B =
       as.foldRight(mb.zero)((a, b) => mb.op(f(a), b))
   }
 
-  val indexedSeqFoldable = new Foldable[IndexedSeq] {
+  val indexedSeqFoldable: Foldable[IndexedSeq] = new Foldable[IndexedSeq] {
     override def foldMap[A, B](as: IndexedSeq[A])(f: A => B)(mb: Monoid[B]): B =
       as.foldRight(mb.zero)((a, b) => mb.op(f(a), b))
   }
 
-  val streamFoldable = new Foldable[Stream] {
+  val streamFoldable: Foldable[Stream] = new Foldable[Stream] {
     override def foldMap[A, B](as: Stream[A])(f: A => B)(mb: Monoid[B]): B =
       as.foldRight(mb.zero)((a, b) => mb.op(f(a), b))
   }
 
-  val treeFoldable = new Foldable[Tree] {
+  val treeFoldable: Foldable[Tree] = new Foldable[Tree] {
     override def foldMap[A, B](as: Tree[A])(f: A => B)(mb: Monoid[B]): B = as match {
       case Branch(left, right) => mb.op(foldMap(left)(f)(mb), foldMap(right)(f)(mb))
       case Leaf(value) => f(value)
     }
   }
 
-  val optionFoldable = new Foldable[Option] {
+  val optionFoldable: Foldable[Option] = new Foldable[Option] {
     override def foldMap[A, B](as: Option[A])(f: A => B)(mb: Monoid[B]): B = as match {
       case Some(value) => f(value)
       case None => mb.zero
@@ -62,7 +62,7 @@ object Foldable {
 
   def mapMergeMonoid[K,V](V: Monoid[V]): Monoid[Map[K, V]] =
     new Monoid[Map[K, V]] {
-      def zero = Map[K,V]()
+      def zero: Map[K, V] = Map[K,V]()
       def op(a: Map[K, V], b: Map[K, V]): Map[K, V] =
         (a.keySet ++ b.keySet).foldLeft(zero) { (acc,k) =>
           acc.updated(k, V.op(a.getOrElse(k, V.zero),

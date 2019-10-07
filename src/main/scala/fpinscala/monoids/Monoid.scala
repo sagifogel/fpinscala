@@ -1,4 +1,4 @@
-package fpinscala.chapter10
+package fpinscala.monoids
 
 trait Monoid[A] {
   def op(a1: A, a2: A): A
@@ -14,9 +14,9 @@ case class Part(lStub: String, words: Int, rStub: String) extends WC
 
 object Monoid {
 
-  import fpinscala.chapter7.Par._
+  import fpinscala.parallelism.Par._
 
-  val stringMonoid = new Monoid[String] {
+  val stringMonoid: Monoid[String] = new Monoid[String] {
     def op(a1: String, a2: String): String = a1 + a2
 
     val zero = ""
@@ -78,7 +78,7 @@ object Monoid {
   }
 
   val wcMonoid: Monoid[WC] = new Monoid[WC] {
-    override def op(a: WC, b: WC) = (a, b) match {
+    override def op(a: WC, b: WC): WC = (a, b) match {
       case (Stub(c), Stub(d)) => Stub(c + d)
       case (Stub(c), Part(l, w, r)) => Part(c + l, w, r)
       case (Part(l, w, r), Stub(c)) => Part(l, w, r + c)

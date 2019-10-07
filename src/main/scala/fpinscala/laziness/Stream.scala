@@ -1,11 +1,11 @@
-package fpinscala.chapter5
+package fpinscala.laziness
 
 import scala.annotation.tailrec
 import scala.Function.const
-import fpinscala.chapter4.Option._
-import fpinscala.chapter4.Option
-import fpinscala.chapter4.Some
-import fpinscala.chapter4.None
+import fpinscala.errorhandling.Option._
+import fpinscala.errorhandling.Option
+import fpinscala.errorhandling.Some
+import fpinscala.errorhandling.None
 
 sealed trait Stream[+A] {
   self =>

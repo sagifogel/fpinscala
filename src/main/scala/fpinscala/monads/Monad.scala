@@ -1,8 +1,8 @@
-package fpinscala.chapter11
+package fpinscala.monads
 
-import fpinscala.chapter6.State
-import fpinscala.chapter7.Par
-import fpinscala.chapter7.Par.Par
+import fpinscala.state.State
+import fpinscala.parallelism.Par
+import fpinscala.parallelism.Par.Par
 
 import scala.Function.const
 import scala.annotation.tailrec
@@ -100,8 +100,8 @@ object Monad {
     override def flatMap[A, B](ma: Id[A])(f: A => Id[B]): Id[B] = f(ma.value)
   }
 
-  def stateMonad[S]: Monad[({type state[x] = State[S, x]})#state]
-  = new Monad[({type state[x] = State[S, x]})#state] {
+  def stateMonad[S]: Monad[({type state[x] = State[S, x]})#state] =
+    new Monad[({type state[x] = State[S, x]})#state] {
     override def unit[A](a: => A): State[S, A] = State(s => (a, s))
 
     override def flatMap[A, B](ma: State[S, A])(f: A => State[S, B]): State[S, B] =
